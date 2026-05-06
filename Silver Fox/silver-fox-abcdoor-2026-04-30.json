@@ -1,0 +1,319 @@
+{
+    "iim_version": "1.1",
+    "chain_id": "silver-fox-abcdoor-2026-04-30",
+    "title": "Silver Fox tax-themed RustSL to ValleyRAT and ABCDoor chain",
+    "description": "Observed Silver Fox campaign using tax-themed delivery to distribute a customized RustSL loader, ValleyRAT, custom ValleyRAT modules and the ABCDoor Python backdoor. The chain models only infrastructure and delivery composition aspects; endpoint persistence and execution details are kept in ATT&CK annotations or notes.",
+    "actor_id": "silver-fox",
+    "observed_at": "2025-12-01T00:00:00Z",
+    "confidence": "likely",
+    "x_references": [
+      {
+        "title": "Silver Fox uses the new ABCDoor backdoor to target organizations in Russia and India",
+        "publisher": "Kaspersky Securelist",
+        "published": "2026-04-30",
+        "url": "https://securelist.com/silver-fox-tax-notification-campaign/119575/"
+      }
+    ],
+    "entities": [
+      {
+        "id": "e1",
+        "type": "file",
+        "value": "tax-themed phishing email attachment or lure PDF",
+        "evidence": [
+          "Kaspersky reports delivery as email attachment or via a PDF containing a link to an attacker-controlled website."
+        ]
+      },
+      {
+        "id": "e2",
+        "type": "url",
+        "value": "attacker-controlled external download website",
+        "evidence": [
+          "Kaspersky describes archive delivery via external attacker-controlled websites linked from PDF attachments."
+        ]
+      },
+      {
+        "id": "e3",
+        "type": "file",
+        "value": "tax-related malicious archive",
+        "evidence": [
+          "Kaspersky reports that the majority of loader samples were contained within tax-related archives."
+        ]
+      },
+      {
+        "id": "e4",
+        "type": "file",
+        "value": "Silver Fox RustSL loader executable mimicking a document",
+        "evidence": [
+          "Kaspersky describes a customized RustSL loader used by Silver Fox in this campaign."
+        ]
+      },
+      {
+        "id": "e5",
+        "type": "file",
+        "value": "encrypted RustSL payload file disguised with benign extension",
+        "evidence": [
+          "Kaspersky reports payloads placed in the same archive as the loader and disguised with extensions such as PNG, HTM, MD, LOG, XLSX, ICO, CFG, MAP, XML or OLD."
+        ]
+      },
+      {
+        "id": "e6",
+        "type": "file",
+        "value": "ValleyRAT Login module / Winos 4.0 payload",
+        "evidence": [
+          "Kaspersky describes the decrypted payload leading to the ValleyRAT Login module."
+        ]
+      },
+      {
+        "id": "e7",
+        "type": "ip",
+        "value": "207.56.138.28",
+        "evidence": [
+          "Kaspersky shows ValleyRAT configuration containing p1:207.56.138[.]28 and port 6666."
+        ]
+      },
+      {
+        "id": "e8",
+        "type": "file",
+        "value": "custom ValleyRAT module 保86.dll / 保86.dll_bin",
+        "evidence": [
+          "Kaspersky describes two previously unseen ValleyRAT modules responsible for downloading and launching ABCDoor."
+        ]
+      },
+      {
+        "id": "e9",
+        "type": "url",
+        "value": "http://154.82.81.205/YD20251001143052.zip",
+        "evidence": [
+          "Kaspersky reports a 52.5 MB archive downloaded from this hardcoded URL, with the archive updated multiple times while the filename remained stable."
+        ]
+      },
+      {
+        "id": "e10",
+        "type": "file",
+        "value": "ABCDoor appclient Python archive",
+        "evidence": [
+          "Kaspersky describes the downloaded archive as containing the ABCDoor Python backdoor package launched as appclient."
+        ]
+      },
+      {
+        "id": "e11",
+        "type": "file",
+        "value": "ABCDoor Python backdoor",
+        "evidence": [
+          "Kaspersky names ABCDoor as a previously undocumented Python-based backdoor delivered by Silver Fox."
+        ]
+      }
+    ],
+    "chain": [
+      {
+        "entity_id": "e1",
+        "role": "entry",
+        "techniques": [],
+        "role_confidence": "likely",
+        "technique_confidence": "confirmed",
+        "review_notes": "The exact sender address and concrete lure file name are not modeled because the public report describes the delivery class, not a single canonical artifact."
+      },
+      {
+        "entity_id": "e2",
+        "role": "redirector",
+        "techniques": [],
+        "role_confidence": "likely",
+        "technique_confidence": "confirmed",
+        "needs_review": true,
+        "review_notes": "Only applicable to the PDF-link delivery variant. The email-attachment variant can skip this position."
+      },
+      {
+        "entity_id": "e3",
+        "role": "staging",
+        "techniques": [
+          "IIM-T024"
+        ],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed"
+      },
+      {
+        "entity_id": "e4",
+        "role": "staging",
+        "techniques": [
+          "IIM-T019"
+        ],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "The geofencing check is implemented in the loader/client side, but it controls whether the delivery chain continues. This is modeled as gating because the campaign flow is region-restricted before later payload retrieval."
+      },
+      {
+        "entity_id": "e5",
+        "role": "staging",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "Disguised encrypted payload container. No existing IIM v1.0 technique exactly captures disguised sidecar payload files; do not invent a fake IIM-T ID."
+      },
+      {
+        "entity_id": "e6",
+        "role": "payload",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed"
+      },
+      {
+        "entity_id": "e7",
+        "role": "c2",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "Known ValleyRAT C2 IP from the decoded configuration."
+      },
+      {
+        "entity_id": "e8",
+        "role": "payload",
+        "techniques": [
+          "IIM-T019"
+        ],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "The custom module repeats the geolocation check before attempting ABCDoor archive retrieval."
+      },
+      {
+        "entity_id": "e9",
+        "role": "staging",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "Stable hardcoded URL serving mutable archive content. This is a strong candidate for a future composition or hosting technique, but no current IIM-T### maps cleanly."
+      },
+      {
+        "entity_id": "e10",
+        "role": "staging",
+        "techniques": [
+          "IIM-T024"
+        ],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed"
+      },
+      {
+        "entity_id": "e11",
+        "role": "payload",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed"
+      }
+    ],
+    "relations": [
+      {
+        "from": "e1",
+        "to": "e2",
+        "type": "references",
+        "sequence_order": 1,
+        "confidence": "likely"
+      },
+      {
+        "from": "e2",
+        "to": "e3",
+        "type": "download",
+        "sequence_order": 2,
+        "confidence": "likely"
+      },
+      {
+        "from": "e3",
+        "to": "e4",
+        "type": "drops",
+        "sequence_order": 3,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e3",
+        "to": "e5",
+        "type": "drops",
+        "sequence_order": 4,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e4",
+        "to": "e5",
+        "type": "references",
+        "sequence_order": 5,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e4",
+        "to": "e6",
+        "type": "execute",
+        "sequence_order": 6,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e6",
+        "to": "e7",
+        "type": "connect",
+        "sequence_order": 7,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e6",
+        "to": "e8",
+        "type": "drops",
+        "sequence_order": 8,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e8",
+        "to": "e9",
+        "type": "download",
+        "sequence_order": 9,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e9",
+        "to": "e10",
+        "type": "download",
+        "sequence_order": 10,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e10",
+        "to": "e11",
+        "type": "execute",
+        "sequence_order": 11,
+        "confidence": "confirmed"
+      }
+    ],
+    "attack_annotations": [
+      {
+        "technique_id": "T1566.001",
+        "name": "Spearphishing Attachment",
+        "tactic": "Initial Access",
+        "comment": "Tax-themed email attachments are described in the public report."
+      },
+      {
+        "technique_id": "T1566.002",
+        "name": "Spearphishing Link",
+        "tactic": "Initial Access",
+        "comment": "Alternative delivery via PDF attachment containing a link to an external attacker-controlled website."
+      },
+      {
+        "technique_id": "T1204.002",
+        "name": "User Execution: Malicious File",
+        "tactic": "Execution",
+        "comment": "User interaction is required to open the delivered archive/executable chain."
+      },
+      {
+        "technique_id": "T1027",
+        "name": "Obfuscated Files or Information",
+        "tactic": "Defense Evasion",
+        "comment": "Encrypted payload container and disguised sidecar files."
+      }
+    ],
+    "x_candidate_iim_techniques": [
+      {
+        "name": "Mutable Payload Behind Stable Staging URL",
+        "category": "composition",
+        "reason": "Kaspersky reports that YD20251001143052.zip was updated multiple times while staying on the same host and filename. This is infrastructure behavior, not endpoint behavior."
+      },
+      {
+        "name": "Disguised Sidecar Payload Container",
+        "category": "composition",
+        "reason": "Encrypted payload placed next to the loader and disguised as benign-looking files. This is delivery composition, but no exact v1.0 technique exists."
+      }
+    ]
+  }

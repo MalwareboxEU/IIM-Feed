@@ -1,0 +1,106 @@
+{
+    "pattern_id": "MB-F-0002",
+    "name": "Archive-Embedded PowerShell Botnet with Cloud C2 and Remote C2 Re-Seeding",
+    "iim_version": "1.1",
+    "description": "A compact malware delivery pattern where an archive container carries a shortcut-triggered loader, the loader extracts a hidden payload blob from the container, the payload communicates with cloud-hosted C2 using structured URL paths, and the operator can remotely replace the active C2 domain.",
+    "derived_from": [
+      "powmix-czech-workforce-2026-04-16"
+    ],
+    "actor_ids": [],
+    "tags": [
+      "powmix",
+      "zip",
+      "lnk",
+      "powershell",
+      "cloud-c2",
+      "c2-migration"
+    ],
+    "match_semantics": "structural",
+    "shape": [
+      {
+        "role": "entry",
+        "techniques": [
+          "IIM-T024"
+        ]
+      },
+      {
+        "role": "staging",
+        "techniques": []
+      },
+      {
+        "role": "staging",
+        "techniques": []
+      },
+      {
+        "role": "staging",
+        "techniques": []
+      },
+      {
+        "role": "payload",
+        "techniques": []
+      },
+      {
+        "role": "c2",
+        "techniques": [
+          "IIM-T002"
+        ]
+      },
+      {
+        "role": "c2",
+        "techniques": []
+      },
+      {
+        "role": "c2",
+        "techniques": [
+          "IIM-T011"
+        ],
+        "optional": true
+      }
+    ],
+    "relations": [
+      {
+        "from_position": 0,
+        "to_position": 1,
+        "type": "drops"
+      },
+      {
+        "from_position": 1,
+        "to_position": 2,
+        "type": "execute"
+      },
+      {
+        "from_position": 2,
+        "to_position": 3,
+        "type": "references"
+      },
+      {
+        "from_position": 2,
+        "to_position": 4,
+        "type": "execute"
+      },
+      {
+        "from_position": 4,
+        "to_position": 5,
+        "type": "connect"
+      },
+      {
+        "from_position": 4,
+        "to_position": 6,
+        "type": "communicates-with"
+      },
+      {
+        "from_position": 5,
+        "to_position": 7,
+        "type": "references"
+      },
+      {
+        "from_position": 4,
+        "to_position": 7,
+        "type": "connect"
+      }
+    ],
+    "x_notes": [
+      "The IIM-T011 annotation on the replacement C2 position is intentionally tentative in the concrete chain. The pattern keeps it optional because #HOST capability may exist without a replacement domain being observed.",
+      "REST-like C2 path encoding is retained in the chain as a C2 URL/path entity and proposed as a candidate technique, not assigned a fake catalog ID."
+    ]
+  }

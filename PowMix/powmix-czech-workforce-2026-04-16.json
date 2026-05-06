@@ -1,0 +1,279 @@
+{
+    "iim_version": "1.1",
+    "chain_id": "powmix-czech-workforce-2026-04-16",
+    "title": "PowMix ZIP/LNK PowerShell botnet chain targeting Czech workforce",
+    "description": "Cisco Talos observed a campaign targeting Czech organizations and workforce-related victims. The chain uses a malicious ZIP, LNK-triggered PowerShell loader, an embedded PowMix payload hidden in the ZIP data blob, and C2 communication via Heroku-hosted infrastructure using REST-like URL paths.",
+    "actor_id": "unknown",
+    "observed_at": "2025-12-01T00:00:00Z",
+    "confidence": "likely",
+    "x_references": [
+      {
+        "title": "PowMix botnet targets Czech workforce",
+        "publisher": "Cisco Talos",
+        "published": "2026-04-16",
+        "url": "https://blog.talosintelligence.com/powmix-botnet-targets-czech-workforce/"
+      },
+      {
+        "title": "PowMix botnet targets Czech workforce IOCs",
+        "publisher": "Cisco Talos GitHub IOCs",
+        "published": "2026-04-16",
+        "url": "https://github.com/Cisco-Talos/IOCs/blob/main/2026/04/powmix-botnet-targets-czech-workforce.txt"
+      }
+    ],
+    "entities": [
+      {
+        "id": "e1",
+        "type": "file",
+        "value": "malicious ZIP archive with compliance-themed lure",
+        "evidence": [
+          "Talos reports the attack begins when the victim runs a Windows shortcut contained within a malicious ZIP file."
+        ]
+      },
+      {
+        "id": "e2",
+        "type": "file",
+        "value": "Windows shortcut file inside ZIP",
+        "evidence": [
+          "Talos describes an LNK-triggered PowerShell loader."
+        ]
+      },
+      {
+        "id": "e3",
+        "type": "file",
+        "value": "embedded PowerShell loader script",
+        "evidence": [
+          "Talos reports that the shortcut triggers an embedded PowerShell loader script."
+        ]
+      },
+      {
+        "id": "e4",
+        "type": "file",
+        "value": "hidden encoded PowMix payload blob inside ZIP",
+        "evidence": [
+          "Talos reports that the loader parses the ZIP for a hardcoded marker such as zAswKoK and extracts a hidden encoded command from the ZIP data blob."
+        ]
+      },
+      {
+        "id": "e5",
+        "type": "file",
+        "value": "PowMix PowerShell botnet payload",
+        "evidence": [
+          "Talos identifies the secondary payload PowerShell script as PowMix, a previously unreported botnet."
+        ]
+      },
+      {
+        "id": "e6",
+        "type": "domain",
+        "value": "herokuapp.com based C2 endpoint",
+        "evidence": [
+          "Talos reports abuse of herokuapp.com for C2 operations and tactical overlap with ZipLine."
+        ]
+      },
+      {
+        "id": "e7",
+        "type": "url",
+        "value": "REST-like C2 URL path containing Bot ID, configuration hash, encrypted heartbeat, timestamp and random suffix",
+        "evidence": [
+          "Talos reports that PowMix embeds encrypted heartbeat data and unique victim identifiers into C2 URL paths mimicking legitimate REST API URLs."
+        ]
+      },
+      {
+        "id": "e8",
+        "type": "domain",
+        "value": "operator-supplied replacement C2 domain from #HOST command",
+        "evidence": [
+          "Talos reports that PowMix can remotely update the C2 URL in its configuration file using the #HOST command."
+        ]
+      }
+    ],
+    "chain": [
+      {
+        "entity_id": "e1",
+        "role": "entry",
+        "techniques": [
+          "IIM-T024"
+        ],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed"
+      },
+      {
+        "entity_id": "e2",
+        "role": "staging",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "LNK is execution behavior / file type context, not an IIM technique by itself."
+      },
+      {
+        "entity_id": "e3",
+        "role": "staging",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "PowerShell loader execution and AMSI bypass are ATT&CK, not IIM."
+      },
+      {
+        "entity_id": "e4",
+        "role": "staging",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "Hidden encoded payload inside ZIP blob is a composition behavior, but current IIM v1.0 only has Archive Container and Nested Container. This is not exactly Nested Container because the payload is embedded in the ZIP data blob rather than another archive layer."
+      },
+      {
+        "entity_id": "e5",
+        "role": "payload",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed"
+      },
+      {
+        "entity_id": "e6",
+        "role": "c2",
+        "techniques": [
+          "IIM-T002"
+        ],
+        "role_confidence": "confirmed",
+        "technique_confidence": "likely",
+        "review_notes": "Heroku is modeled as Cloud Hosting. If the catalog later distinguishes PaaS app hosting from generic cloud IaaS, this can be refined."
+      },
+      {
+        "entity_id": "e7",
+        "role": "c2",
+        "techniques": [],
+        "role_confidence": "confirmed",
+        "technique_confidence": "confirmed",
+        "review_notes": "REST-like URL path encoding is infrastructure-relevant C2 communication shape, but no current IIM v1.0 technique maps cleanly. Kept as C2 entity plus candidate technique."
+      },
+      {
+        "entity_id": "e8",
+        "role": "c2",
+        "techniques": [
+          "IIM-T011"
+        ],
+        "role_confidence": "likely",
+        "technique_confidence": "tentative",
+        "needs_review": true,
+        "review_notes": "The #HOST command supports C2 migration. It resembles Domain Rotation, but the public report describes remote C2 replacement rather than an observed rotating domain pool. Technique confidence is therefore tentative."
+      }
+    ],
+    "relations": [
+      {
+        "from": "e1",
+        "to": "e2",
+        "type": "drops",
+        "sequence_order": 1,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e2",
+        "to": "e3",
+        "type": "execute",
+        "sequence_order": 2,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e3",
+        "to": "e4",
+        "type": "references",
+        "sequence_order": 3,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e3",
+        "to": "e5",
+        "type": "execute",
+        "sequence_order": 4,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e5",
+        "to": "e6",
+        "type": "connect",
+        "sequence_order": 5,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e5",
+        "to": "e7",
+        "type": "communicates-with",
+        "sequence_order": 6,
+        "confidence": "confirmed"
+      },
+      {
+        "from": "e6",
+        "to": "e8",
+        "type": "references",
+        "sequence_order": 7,
+        "confidence": "likely"
+      },
+      {
+        "from": "e5",
+        "to": "e8",
+        "type": "connect",
+        "sequence_order": 8,
+        "confidence": "tentative"
+      }
+    ],
+    "attack_annotations": [
+      {
+        "technique_id": "T1566.001",
+        "name": "Spearphishing Attachment",
+        "tactic": "Initial Access",
+        "comment": "Talos states the malicious ZIP was potentially delivered through phishing email."
+      },
+      {
+        "technique_id": "T1204.002",
+        "name": "User Execution: Malicious File",
+        "tactic": "Execution",
+        "comment": "The chain begins when the victim runs the Windows shortcut file."
+      },
+      {
+        "technique_id": "T1059.001",
+        "name": "PowerShell",
+        "tactic": "Execution",
+        "comment": "The loader and PowMix payload are PowerShell-based."
+      },
+      {
+        "technique_id": "T1027",
+        "name": "Obfuscated Files or Information",
+        "tactic": "Defense Evasion",
+        "comment": "Hidden encoded command inside ZIP blob and XOR-obfuscated configuration."
+      },
+      {
+        "technique_id": "T1562.001",
+        "name": "Impair Defenses: Disable or Modify Tools",
+        "tactic": "Defense Evasion",
+        "comment": "Talos describes AMSI bypass logic."
+      },
+      {
+        "technique_id": "T1053.005",
+        "name": "Scheduled Task/Job: Scheduled Task",
+        "tactic": "Persistence",
+        "comment": "Talos describes scheduled task persistence."
+      },
+      {
+        "technique_id": "T1105",
+        "name": "Ingress Tool Transfer",
+        "tactic": "Command and Control",
+        "comment": "C2 can return payloads/commands for execution."
+      }
+    ],
+    "x_candidate_iim_techniques": [
+      {
+        "name": "C2 Path-Encoded Telemetry",
+        "category": "routing",
+        "reason": "PowMix embeds bot identity, config hash, encrypted heartbeat, timestamp and random suffix into REST-like URL paths. This is observable C2 infrastructure shape."
+      },
+      {
+        "name": "Remote C2 Re-Seeding",
+        "category": "resolution",
+        "reason": "The #HOST command lets the operator push a replacement C2 URL that the bot prioritizes on later initialization. This is stronger than simple domain rotation and probably deserves its own IIM technique."
+      },
+      {
+        "name": "Payload Blob Embedded in Container Data",
+        "category": "composition",
+        "reason": "The payload is not simply a normal archived child file; it is extracted from a ZIP data blob via a marker. Current IIM-T024 covers archive delivery, but not this exact composition trick."
+      }
+    ]
+  }

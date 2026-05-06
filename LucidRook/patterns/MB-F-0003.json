@@ -1,0 +1,130 @@
+{
+  "pattern_id": "MB-F-0003",
+  "name": "Shortened-URL Archive Loader with Compromised FTP Stage Retrieval",
+  "iim_version": "1.1",
+  "description": "A targeted delivery pattern where a spear-phishing entry points to a shortened URL, the redirector delivers a password-protected archive, the archive hides a loader bundle, the stager retrieves its next stage from compromised FTP infrastructure, and host reconnaissance or staged payloads move through the same abused FTP substrate.",
+  "derived_from": [
+    "uat-10362-lucidrook-taiwan-2026-04-08"
+  ],
+  "actor_ids": [
+    "UAT-10362"
+  ],
+  "tags": [
+    "lucidrook",
+    "lucidpawn",
+    "taiwan",
+    "shortener",
+    "archive-container",
+    "ftp-c2",
+    "compromised-host"
+  ],
+  "match_semantics": "structural",
+  "shape": [
+    {
+      "role": "entry",
+      "techniques": []
+    },
+    {
+      "role": "redirector",
+      "techniques": [
+        "IIM-T016"
+      ]
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ]
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "payload",
+      "techniques": []
+    },
+    {
+      "role": "c2",
+      "techniques": [
+        "IIM-T004"
+      ]
+    },
+    {
+      "role": "payload",
+      "techniques": []
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ],
+      "optional": true
+    },
+    {
+      "role": "c2",
+      "techniques": [],
+      "optional": true
+    }
+  ],
+  "relations": [
+    {
+      "from_position": 0,
+      "to_position": 1,
+      "type": "references"
+    },
+    {
+      "from_position": 1,
+      "to_position": 2,
+      "type": "download"
+    },
+    {
+      "from_position": 2,
+      "to_position": 3,
+      "type": "drops"
+    },
+    {
+      "from_position": 3,
+      "to_position": 4,
+      "type": "execute"
+    },
+    {
+      "from_position": 4,
+      "to_position": 5,
+      "type": "execute"
+    },
+    {
+      "from_position": 5,
+      "to_position": 6,
+      "type": "connect"
+    },
+    {
+      "from_position": 6,
+      "to_position": 7,
+      "type": "download"
+    },
+    {
+      "from_position": 5,
+      "to_position": 8,
+      "type": "drops"
+    },
+    {
+      "from_position": 5,
+      "to_position": 6,
+      "type": "communicates-with"
+    },
+    {
+      "from_position": 5,
+      "to_position": 9,
+      "type": "communicates-with"
+    }
+  ],
+  "x_notes": [
+    "Pattern abstracts the concrete LucidPawn/LucidRook file names away and keeps the stable infrastructure shape: shortener -> archive -> local staging bundle -> compromised FTP C2/staging.",
+    "Compromised FTP substrate is modeled as likely IIM-T004 because the report describes exposed credentials and legitimate printing-company FTP servers, not attacker-owned VPS infrastructure."
+  ]
+}

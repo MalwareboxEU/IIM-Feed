@@ -1,0 +1,143 @@
+{
+  "pattern_id": "MB-F-0001",
+  "name": "Geofenced Multi-Stage Loader with Mutable Remote Payload Archive",
+  "iim_version": "1.1",
+  "description": "A delivery chain where a themed lure leads to an archive container, a loader performs or enforces geofenced progression, an encrypted sidecar or embedded payload produces a first payload, and a later module retrieves a large mutable archive from a stable staging URL to launch a secondary backdoor.",
+  "derived_from": [
+    "silver-fox-abcdoor-2026-04-30"
+  ],
+  "actor_ids": [
+    "silver-fox"
+  ],
+  "tags": [
+    "silver-fox",
+    "abcdoor",
+    "valleyrat",
+    "geofenced-delivery",
+    "archive-container",
+    "mutable-staging"
+  ],
+  "match_semantics": "structural",
+  "shape": [
+    {
+      "role": "entry",
+      "techniques": []
+    },
+    {
+      "role": "redirector",
+      "techniques": [],
+      "optional": true
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ]
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T019"
+      ]
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "payload",
+      "techniques": []
+    },
+    {
+      "role": "c2",
+      "techniques": []
+    },
+    {
+      "role": "payload",
+      "techniques": [
+        "IIM-T019"
+      ],
+      "optional": true
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ]
+    },
+    {
+      "role": "payload",
+      "techniques": []
+    }
+  ],
+  "relations": [
+    {
+      "from_position": 0,
+      "to_position": 1,
+      "type": "references"
+    },
+    {
+      "from_position": 1,
+      "to_position": 2,
+      "type": "download"
+    },
+    {
+      "from_position": 0,
+      "to_position": 2,
+      "type": "download"
+    },
+    {
+      "from_position": 2,
+      "to_position": 3,
+      "type": "drops"
+    },
+    {
+      "from_position": 2,
+      "to_position": 4,
+      "type": "drops"
+    },
+    {
+      "from_position": 3,
+      "to_position": 4,
+      "type": "references"
+    },
+    {
+      "from_position": 3,
+      "to_position": 5,
+      "type": "execute"
+    },
+    {
+      "from_position": 5,
+      "to_position": 6,
+      "type": "connect"
+    },
+    {
+      "from_position": 5,
+      "to_position": 7,
+      "type": "drops"
+    },
+    {
+      "from_position": 7,
+      "to_position": 8,
+      "type": "download"
+    },
+    {
+      "from_position": 8,
+      "to_position": 9,
+      "type": "download"
+    },
+    {
+      "from_position": 9,
+      "to_position": 10,
+      "type": "execute"
+    }
+  ],
+  "x_notes": [
+    "The redirector position is optional because Kaspersky describes two delivery variants: direct email attachment and PDF link to external attacker-controlled website.",
+    "The stable mutable archive behavior is retained as pattern structure but not assigned a fake technique ID."
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "iim_version": "1.1",
+  "chain_id": "uat-10362-lucidrook-taiwan-2026-04-08",
+  "title": "UAT-10362 LucidRook LNK archive chain against Taiwanese organizations",
+  "description": "Cisco Talos reported UAT-10362 spear-phishing Taiwanese NGOs and suspected universities with shortened URLs leading to password-protected archives. The modeled chain follows the LNK-based path: archive delivery, hidden nested folder staging, LucidPawn dropper, LucidRook stager, compromised FTP infrastructure used for payload retrieval and exfiltration, and a DNS beaconing domain observed in the IOC set.",
+  "actor_id": "UAT-10362",
+  "observed_at": "2025-10-01T00:00:00Z",
+  "confidence": "likely",
+  "x_references": [
+    {
+      "title": "New Lua-based malware ‘LucidRook’ observed in targeted attacks against Taiwanese organizations",
+      "publisher": "Cisco Talos",
+      "published": "2026-04-08",
+      "url": "https://blog.talosintelligence.com/new-lua-based-malware-lucidrook/"
+    },
+    {
+      "title": "New Lua-based malware LucidRook IOCs",
+      "publisher": "Cisco Talos GitHub IOCs",
+      "published": "2026-04-08",
+      "url": "https://github.com/Cisco-Talos/IOCs/blob/main/2026/04/new-lua-based-malware-lucidrook.txt"
+    }
+  ],
+  "entities": [
+    {
+      "id": "e1",
+      "type": "email",
+      "value": "spear-phishing email targeting Taiwanese NGO or suspected university",
+      "evidence": [
+        "Talos reports spear-phishing emails against Taiwanese NGOs and suspected universities as the delivery context for LucidRook."
+      ]
+    },
+    {
+      "id": "e2",
+      "type": "url",
+      "value": "shortened URL leading to password-protected encrypted RAR archive",
+      "evidence": [
+        "Talos states that the email contained a shortened URL which led to a password-protected and encrypted RAR archive, with the password included in the email body."
+      ]
+    },
+    {
+      "id": "e3",
+      "type": "file",
+      "value": "password-protected encrypted RAR archive containing LNK lure and hidden directory",
+      "evidence": [
+        "Talos describes the LNK-based samples as delivered as an archive containing an LNK file, a decoy document with substituted PDF icon, and a hidden directory."
+      ]
+    },
+    {
+      "id": "e4",
+      "type": "file",
+      "value": "malicious LNK file with substituted PDF icon",
+      "evidence": [
+        "Talos reports LNK files in the archive that launch the embedded malware via the hidden directory contents."
+      ]
+    },
+    {
+      "id": "e5",
+      "type": "file",
+      "value": "hidden four-level directory containing DismCore.dll, install.exe and decoy file",
+      "evidence": [
+        "Talos states that the hidden directory contains four layers of nested folders and that the fourth-level directory contains LucidPawn, a legitimate EXE and a decoy file."
+      ]
+    },
+    {
+      "id": "e6",
+      "type": "file",
+      "value": "LucidPawn dropper DismCore.dll",
+      "evidence": [
+        "Talos tracks the initial dropper in the LNK infection chain as LucidPawn and names DismCore.dll in the hidden directory."
+      ]
+    },
+    {
+      "id": "e7",
+      "type": "file",
+      "value": "LucidRook DLL stager written as DismCore.dll",
+      "evidence": [
+        "Talos reports that LucidPawn decrypts and writes the LucidRook stager as DismCore.dll under the WindowsApps path."
+      ]
+    },
+    {
+      "id": "e8",
+      "type": "ip",
+      "value": "1.34.253.131",
+      "evidence": [
+        "Cisco Talos IOC repository lists 1.34.253.131 as an abused FTP server for LucidRook."
+      ]
+    },
+    {
+      "id": "e9",
+      "type": "ip",
+      "value": "59.124.71.242",
+      "evidence": [
+        "Cisco Talos IOC repository lists 59.124.71.242 as an abused FTP server for LucidRook."
+      ]
+    },
+    {
+      "id": "e10",
+      "type": "file",
+      "value": "archive1.zip staged Lua bytecode payload from FTP C2",
+      "evidence": [
+        "Talos reports that LucidRook retrieves archive1.zip from the C2 over FTP and executes the Lua bytecode after unpacking and validation."
+      ]
+    },
+    {
+      "id": "e11",
+      "type": "file",
+      "value": "archive4.zip encrypted host reconnaissance upload",
+      "evidence": [
+        "Talos reports that collected system information is archived into archive4.zip and uploaded to the C2 FTP server."
+      ]
+    },
+    {
+      "id": "e12",
+      "type": "domain",
+      "value": "d.2fcc7078.digimg.store",
+      "evidence": [
+        "Cisco Talos IOC repository lists d.2fcc7078.digimg.store as a DNS beaconing domain for LucidRook-related activity."
+      ]
+    }
+  ],
+  "chain": [
+    {
+      "entity_id": "e1",
+      "role": "entry",
+      "techniques": [],
+      "role_confidence": "likely",
+      "technique_confidence": "confirmed",
+      "review_notes": "The public report describes the email class but not a canonical sender or exact message body."
+    },
+    {
+      "entity_id": "e2",
+      "role": "redirector",
+      "techniques": [
+        "IIM-T016"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e3",
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e4",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "LNK execution is endpoint behavior / file type context, not an IIM infrastructure technique."
+    },
+    {
+      "entity_id": "e5",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "Four nested folders are modeled as staging structure, not IIM-T025, because Talos describes nested directories rather than archive-in-archive delivery."
+    },
+    {
+      "entity_id": "e6",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "DLL search order hijacking and persistence belong to ATT&CK, not IIM."
+    },
+    {
+      "entity_id": "e7",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e8",
+      "role": "c2",
+      "techniques": [
+        "IIM-T004"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "likely",
+      "review_notes": "Talos says the FTP servers appear abused/compromised and were operated by printing companies; Compromised Legitimate Host is therefore likely, not confirmed by server-side forensic access in the public report."
+    },
+    {
+      "entity_id": "e9",
+      "role": "c2",
+      "techniques": [
+        "IIM-T004"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "likely"
+    },
+    {
+      "entity_id": "e10",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e11",
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "Archive used for exfil packaging; retained as a staging artifact, not a terminal payload."
+    },
+    {
+      "entity_id": "e12",
+      "role": "c2",
+      "techniques": [],
+      "role_confidence": "likely",
+      "technique_confidence": "confirmed",
+      "review_notes": "The IOC list labels this as DNS beaconing domain; the public article excerpt does not provide enough behavior to assign a more specific IIM technique."
+    }
+  ],
+  "relations": [
+    {
+      "from": "e1",
+      "to": "e2",
+      "type": "references",
+      "sequence_order": 1,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e2",
+      "to": "e3",
+      "type": "download",
+      "sequence_order": 2,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e3",
+      "to": "e4",
+      "type": "drops",
+      "sequence_order": 3,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e3",
+      "to": "e5",
+      "type": "drops",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e4",
+      "to": "e6",
+      "type": "execute",
+      "sequence_order": 5,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e6",
+      "to": "e7",
+      "type": "drops",
+      "sequence_order": 6,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e6",
+      "to": "e7",
+      "type": "execute",
+      "sequence_order": 7,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e7",
+      "to": "e8",
+      "type": "connect",
+      "sequence_order": 8,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e7",
+      "to": "e9",
+      "type": "connect",
+      "sequence_order": 9,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e8",
+      "to": "e10",
+      "type": "download",
+      "sequence_order": 10,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e7",
+      "to": "e11",
+      "type": "drops",
+      "sequence_order": 11,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e7",
+      "to": "e8",
+      "type": "communicates-with",
+      "sequence_order": 12,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e7",
+      "to": "e12",
+      "type": "communicates-with",
+      "sequence_order": 13,
+      "confidence": "likely"
+    }
+  ],
+  "x_notes": [
+    "Only the LNK-based LucidRook path is modeled here. Talos also describes a separate EXE-based path; model that as a second chain if you want variant coverage instead of one mixed chain.",
+    "OAST-service abuse is mentioned in Talos' summary, but the public text available in the article does not give enough observable structure to place it cleanly in this chain without over-modeling."
+  ]
+}

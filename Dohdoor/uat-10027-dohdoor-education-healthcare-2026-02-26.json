@@ -1,0 +1,255 @@
+{
+  "iim_version": "1.1",
+  "chain_id": "uat-10027-dohdoor-education-healthcare-2026-02-26",
+  "title": "UAT-10027 Dohdoor Cloudflare-fronted DoH C2 chain targeting education and health care",
+  "description": "Cisco Talos reported an ongoing campaign active since at least December 2025 against U.S. education and health care victims. The modeled chain follows the PowerShell downloader, remote batch script, C2-hosted malicious DLL retrieval, Dohdoor loader execution, DNS-over-HTTPS resolution through Cloudflare, Cloudflare-fronted C2 communication, and reflective next-stage payload retrieval.",
+  "actor_id": "UAT-10027",
+  "observed_at": "2025-12-01T00:00:00Z",
+  "confidence": "likely",
+  "x_references": [
+    {
+      "title": "New Dohdoor malware campaign targets education and health care",
+      "publisher": "Cisco Talos",
+      "published": "2026-02-26",
+      "url": "https://blog.talosintelligence.com/new-dohdoor-malware-campaign/"
+    },
+    {
+      "title": "New Dohdoor malware campaign IOCs",
+      "publisher": "Cisco Talos GitHub IOCs",
+      "published": "2026-02-26",
+      "url": "https://github.com/Cisco-Talos/IOCs/blob/main/2026/02/new-dohdoor-malware-campaign.txt"
+    }
+  ],
+  "entities": [
+    {
+      "id": "e1",
+      "type": "file",
+      "value": "suspected phishing-delivered PowerShell downloader",
+      "evidence": [
+        "Talos states that the initial vector remains unknown but observed related PowerShell scripts with embedded download URLs, potentially delivered through phishing email."
+      ]
+    },
+    {
+      "id": "e2",
+      "type": "url",
+      "value": "remote staging URL serving .bat or .cmd batch file",
+      "evidence": [
+        "Talos observed curl.exe downloading malicious Windows batch files with .bat or .cmd extensions from encoded URLs."
+      ]
+    },
+    {
+      "id": "e3",
+      "type": "file",
+      "value": "Windows batch script dropper orchestrating DLL sideloading",
+      "evidence": [
+        "Talos describes the second-stage component as a Windows batch script dropper that creates a hidden workspace, downloads the malicious DLL and launches legitimate executables for sideloading."
+      ]
+    },
+    {
+      "id": "e4",
+      "type": "url",
+      "value": "http://ezQrvkFgEJWCTDNc.pNuiSCKMhwAgZvdyjrlBEFT.softwarE/111111?sub=d",
+      "evidence": [
+        "Cisco Talos IOC repository lists this Dohdoor URL ending in /111111?sub=d, matching the report's DLL-download resource path."
+      ]
+    },
+    {
+      "id": "e5",
+      "type": "file",
+      "value": "Dohdoor malicious DLL disguised as propsys.dll or batmeter.dll",
+      "evidence": [
+        "Talos reports that the batch script downloads a malicious DLL from the C2 URL /111111?sub=d and disguises it as a legitimate Windows DLL such as propsys.dll or batmeter.dll."
+      ]
+    },
+    {
+      "id": "e6",
+      "type": "url",
+      "value": "http://GppiwoGwNdiakkDU.pnuiSckMHwaGzvDYjRLbeFt.SoFTWARe/111111?sub=s",
+      "evidence": [
+        "Cisco Talos IOC repository lists this Dohdoor URL ending in /111111?sub=s, matching the report's sideload argument resource path."
+      ]
+    },
+    {
+      "id": "e7",
+      "type": "domain",
+      "value": "cloudflare-dns.com DoH resolver over HTTPS/443",
+      "evidence": [
+        "Talos reports that Dohdoor sends encrypted DNS requests to Cloudflare's DNS server over HTTPS port 443 and parses the JSON answer to obtain the C2 IP address."
+      ]
+    },
+    {
+      "id": "e8",
+      "type": "domain",
+      "value": "MswInSofTUpDloAd.deSigN / DEEPinSPeCTioNsyStEM.OnLiNe / PNUIsckmHwAgzVdYJRlbeFT.SoftWarE themed C2 domain pool",
+      "evidence": [
+        "Talos reports C2 subdomain themes such as MswInSofTUpDloAd and DEEPinSPeCTioNsyStEM with irregular capitalization and non-traditional TLDs; the IOC list contains multiple domains in these families."
+      ]
+    },
+    {
+      "id": "e9",
+      "type": "file",
+      "value": "potential Cobalt Strike Beacon next-stage payload",
+      "evidence": [
+        "Talos reports that Dohdoor can download the next-stage payload directly into memory and execute a potential Cobalt Strike Beacon reflectively within legitimate Windows processes."
+      ]
+    }
+  ],
+  "chain": [
+    {
+      "entity_id": "e1",
+      "role": "entry",
+      "techniques": [],
+      "role_confidence": "likely",
+      "technique_confidence": "confirmed",
+      "review_notes": "Initial access is not fully confirmed in the public report; model as likely because Talos explicitly says potentially phishing-delivered PowerShell."
+    },
+    {
+      "entity_id": "e2",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e3",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "Batch script behavior, cleanup and DLL sideloading are endpoint execution/defense evasion details, so no IIM technique is assigned."
+    },
+    {
+      "entity_id": "e4",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "Specific C2-hosted DLL retrieval URL. No separate IIM technique is assigned because URL path semantics are not in the current catalog."
+    },
+    {
+      "entity_id": "e5",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e6",
+      "role": "c2",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "The /111111?sub=s URL is passed as an argument into the sideload execution flow and used by Dohdoor to locate the server/resource path."
+    },
+    {
+      "entity_id": "e7",
+      "role": "redirector",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "technique_confidence": "confirmed",
+      "review_notes": "DNS-over-HTTPS resolver abuse is clearly infrastructure behavior, but the current v1.0 IIM catalog has no exact DoH resolver technique. Kept unassigned instead of inventing a fake ID."
+    },
+    {
+      "entity_id": "e8",
+      "role": "c2",
+      "techniques": [
+        "IIM-T001",
+        "IIM-T011"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "likely",
+      "review_notes": "IIM-T001 maps to the Cloudflare edge/fronting substrate described by Talos. IIM-T011 is likely because the IOC set shows multiple themed domains across the same campaign, but the report does not prove active cycling intervals."
+    },
+    {
+      "entity_id": "e9",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "likely",
+      "technique_confidence": "confirmed",
+      "review_notes": "Talos describes the next-stage as a potential Cobalt Strike Beacon; keep payload confidence likely."
+    }
+  ],
+  "relations": [
+    {
+      "from": "e1",
+      "to": "e2",
+      "type": "download",
+      "sequence_order": 1,
+      "confidence": "likely"
+    },
+    {
+      "from": "e2",
+      "to": "e3",
+      "type": "download",
+      "sequence_order": 2,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e3",
+      "to": "e4",
+      "type": "download",
+      "sequence_order": 3,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e4",
+      "to": "e5",
+      "type": "download",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e3",
+      "to": "e5",
+      "type": "execute",
+      "sequence_order": 5,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e5",
+      "to": "e6",
+      "type": "references",
+      "sequence_order": 6,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e5",
+      "to": "e7",
+      "type": "references",
+      "sequence_order": 7,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e7",
+      "to": "e8",
+      "type": "resolves-to",
+      "sequence_order": 8,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e5",
+      "to": "e8",
+      "type": "connect",
+      "sequence_order": 9,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e8",
+      "to": "e9",
+      "type": "download",
+      "sequence_order": 10,
+      "confidence": "likely"
+    },
+    {
+      "from": "e5",
+      "to": "e8",
+      "type": "communicates-with",
+      "sequence_order": 11,
+      "confidence": "confirmed"
+    }
+  ],
+  "x_notes": [
+    "DoH resolver abuse probably deserves a future IIM resolution technique, but this chain intentionally leaves it unassigned rather than abusing IIM-T013 or inventing a non-catalog ID.",
+    "The specific URLs in e4/e6 are taken from the Talos IOC repository and correspond to the /111111?sub=d and /111111?sub=s path semantics described in the article."
+  ]
+}

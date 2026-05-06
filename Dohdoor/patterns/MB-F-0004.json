@@ -1,0 +1,116 @@
+{
+  "pattern_id": "MB-F-0004",
+  "name": "PowerShell Batch Loader with Cloudflare-Fronted DoH-Resolved C2",
+  "iim_version": "1.1",
+  "description": "A multi-stage Windows delivery pattern where a script-delivered batch stage retrieves a DLL payload from operator infrastructure, executes it through a sideloading path, resolves C2 through a trusted DoH provider, and communicates with a Cloudflare-fronted domain pool before retrieving a next-stage payload.",
+  "derived_from": [
+    "uat-10027-dohdoor-education-healthcare-2026-02-26"
+  ],
+  "actor_ids": [
+    "UAT-10027"
+  ],
+  "tags": [
+    "dohdoor",
+    "uat-10027",
+    "doh",
+    "cloudflare",
+    "batch-loader",
+    "cloud-c2",
+    "domain-pool"
+  ],
+  "match_semantics": "structural",
+  "shape": [
+    {
+      "role": "entry",
+      "techniques": []
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "staging",
+      "techniques": []
+    },
+    {
+      "role": "payload",
+      "techniques": []
+    },
+    {
+      "role": "redirector",
+      "techniques": []
+    },
+    {
+      "role": "c2",
+      "techniques": [
+        "IIM-T001",
+        "IIM-T011"
+      ]
+    },
+    {
+      "role": "payload",
+      "techniques": [],
+      "optional": true
+    }
+  ],
+  "relations": [
+    {
+      "from_position": 0,
+      "to_position": 1,
+      "type": "download"
+    },
+    {
+      "from_position": 1,
+      "to_position": 2,
+      "type": "download"
+    },
+    {
+      "from_position": 2,
+      "to_position": 3,
+      "type": "download"
+    },
+    {
+      "from_position": 3,
+      "to_position": 4,
+      "type": "download"
+    },
+    {
+      "from_position": 2,
+      "to_position": 4,
+      "type": "execute"
+    },
+    {
+      "from_position": 4,
+      "to_position": 5,
+      "type": "references"
+    },
+    {
+      "from_position": 5,
+      "to_position": 6,
+      "type": "resolves-to"
+    },
+    {
+      "from_position": 4,
+      "to_position": 6,
+      "type": "connect"
+    },
+    {
+      "from_position": 6,
+      "to_position": 7,
+      "type": "download"
+    },
+    {
+      "from_position": 4,
+      "to_position": 6,
+      "type": "communicates-with"
+    }
+  ],
+  "x_notes": [
+    "Pattern keeps DoH resolver as an untyped redirector because current IIM v1.0 has no exact technique for DoH-based C2 resolution.",
+    "Domain rotation is intentionally likely/structural: the public IOCs show a domain pool with repeated themed labels, while the report does not prove minute-by-minute rotation."
+  ]
+}
