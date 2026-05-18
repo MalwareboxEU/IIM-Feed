@@ -1,0 +1,189 @@
+{
+  "pattern_id": "MB-F-0005",
+  "name": "Gated HTA Archive Loader with Pseudo-PNG Local Staging and Signed Network Stack",
+  "iim_version": "1.1",
+  "description": "A targeted delivery and payload-composition pattern where a lure references gated HTA delivery infrastructure, the HTA stage retrieves a shared ZIP archive, the archive contains a legitimate application plus a side-loaded loader chain, local encoded blobs reconstruct a pseudo-PNG IDAT container, the decoded payload bundle deploys signed utility components, and the final network surface may use LAN-local discovery or an internal controller rather than a static external C2.",
+  "derived_from": [
+    "uac-0184-pseudo-png-passmark-2026-05"
+  ],
+  "actor_ids": [
+    "UAC-0184"
+  ],
+  "tags": [
+    "uac-0184",
+    "ukraine",
+    "hta-delivery",
+    "gated-delivery",
+    "archive-container",
+    "dll-sideloading",
+    "pseudo-png",
+    "idat-staging",
+    "lznt1",
+    "signed-network-stack",
+    "lan-discovery"
+  ],
+  "match_semantics": "structural",
+  "shape": [
+    {
+      "role": "entry",
+      "techniques": []
+    },
+    {
+      "role": "entry",
+      "techniques": [
+        "IIM-T019",
+        "IIM-T020",
+        "IIM-T021"
+      ],
+      "x_role_hint": "Gated HTA or scriptable entry stage"
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T019",
+        "IIM-T020",
+        "IIM-T021"
+      ],
+      "x_role_hint": "Bare-IP or controlled delivery endpoint"
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T024"
+      ],
+      "x_role_hint": "Shared archive payload container"
+    },
+    {
+      "role": "staging",
+      "techniques": [],
+      "x_role_hint": "Legitimate host application used as local execution cover"
+    },
+    {
+      "role": "staging",
+      "techniques": [],
+      "x_role_hint": "Side-loaded loader component"
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T025"
+      ],
+      "x_role_hint": "Encoded local blob or decoded intermediate stage"
+    },
+    {
+      "role": "staging",
+      "techniques": [
+        "IIM-T025"
+      ],
+      "x_role_hint": "Pseudo-file-format container such as pseudo-PNG IDAT staging",
+      "x_candidate_technique": "Pseudo-file-format local staging"
+    },
+    {
+      "role": "payload",
+      "techniques": [],
+      "x_role_hint": "Decoded payload bundle"
+    },
+    {
+      "role": "payload",
+      "techniques": [],
+      "x_role_hint": "Signed host and third-party network-capable component",
+      "x_candidate_technique": "Signed third-party network stack reuse"
+    },
+    {
+      "role": "c2",
+      "techniques": [],
+      "optional": true,
+      "x_role_hint": "LAN-local multicast discovery surface"
+    },
+    {
+      "role": "c2",
+      "techniques": [],
+      "optional": true,
+      "x_role_hint": "Internal peer or controller inferred from protocol design"
+    }
+  ],
+  "relations": [
+    {
+      "from_position": 0,
+      "to_position": 1,
+      "type": "references"
+    },
+    {
+      "from_position": 1,
+      "to_position": 2,
+      "type": "connect"
+    },
+    {
+      "from_position": 2,
+      "to_position": 3,
+      "type": "download"
+    },
+    {
+      "from_position": 3,
+      "to_position": 4,
+      "type": "drops"
+    },
+    {
+      "from_position": 3,
+      "to_position": 5,
+      "type": "drops"
+    },
+    {
+      "from_position": 3,
+      "to_position": 6,
+      "type": "drops"
+    },
+    {
+      "from_position": 3,
+      "to_position": 7,
+      "type": "drops"
+    },
+    {
+      "from_position": 4,
+      "to_position": 5,
+      "type": "references"
+    },
+    {
+      "from_position": 5,
+      "to_position": 6,
+      "type": "references"
+    },
+    {
+      "from_position": 6,
+      "to_position": 7,
+      "type": "references"
+    },
+    {
+      "from_position": 7,
+      "to_position": 8,
+      "type": "drops"
+    },
+    {
+      "from_position": 8,
+      "to_position": 9,
+      "type": "drops"
+    },
+    {
+      "from_position": 9,
+      "to_position": 10,
+      "type": "communicates-with"
+    },
+    {
+      "from_position": 10,
+      "to_position": 11,
+      "type": "communicates-with"
+    },
+    {
+      "from_position": 9,
+      "to_position": 11,
+      "type": "connect"
+    }
+  ],
+  "x_notes": [
+    "Pattern abstracts concrete file names away and keeps the stable structure: gated HTA delivery, shared archive retrieval, legitimate host plus side-loaded loader, local encoded blob chain, pseudo-PNG staged container, decoded payload bundle, and signed network-capable tooling.",
+    "The pseudo-PNG IDAT stage is modeled structurally under composition because it behaves like a local staged container. IIM-T025 is close but not perfect, so the position also carries x_candidate_technique.",
+    "The signed PassMark / VSLauncher network surface is not forced into IIM-T018 because it is not classic third-party application API C2. It is kept as an extension candidate for signed third-party network stack reuse.",
+    "The final C2 positions are optional because the analyzed artifacts did not contain a static external C2. LAN-local discovery and an internal peer/controller are modeled as tentative structural positions.",
+    "Useful matching signal: the structure survives rotation better than the HTA names, archive name, file hashes, or delivery IP."
+  ]
+}

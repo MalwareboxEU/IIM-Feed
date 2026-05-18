@@ -1,0 +1,416 @@
+{
+  "iim_version": "1.1",
+  "chain_id": "uac-0184-pseudo-png-passmark-2026-05",
+  "title": "UAC-0184 gated HTA delivery to pseudo-PNG staged payload and PassMark network stack",
+  "description": "Observed UAC-0184 chain from gated HTA and ZIP delivery into Plane9-based sideloading, encoded local blobs, pseudo-PNG IDAT staging, LZNT1 unpacking and a signed VSLauncher / PassMark network-capable payload bundle. The internal controller or C2 element remains tentative because no static C2 endpoint was present in the analyzed artifacts.",
+  "actor_id": "UAC-0184",
+  "confidence": "likely",
+  "needs_review": true,
+  "x_note": "PassMark network-stack reuse is intentionally not forced into an existing IIM technique. It is modeled as an extension candidate because the observed behavior is closer to signed third-party network protocol reuse than to classic third-party application C2.",
+  "entities": [
+    {
+      "id": "e_lure_lnk",
+      "type": "file",
+      "value": "Ukraine-themed LNK lure",
+      "evidence": [
+        "Initial chain uses bitsadmin /transfer and mshta.exe"
+      ]
+    },
+    {
+      "id": "e_hta_set",
+      "type": "url",
+      "value": "hxxp://169.40.135.35/dctrpr/*.hta",
+      "evidence": [
+        "slippersuppity.hta",
+        "basketpast.hta",
+        "agentdiesel.hta"
+      ]
+    },
+    {
+      "id": "e_delivery_ip",
+      "type": "ip",
+      "value": "169.40.135.35",
+      "x_delivery_path": "/dctrpr/"
+    },
+    {
+      "id": "e_zip",
+      "type": "file",
+      "value": "dctrprraclus.zip",
+      "evidence": [
+        "All observed HTA files pointed to the same ZIP archive"
+      ]
+    },
+    {
+      "id": "e_cluster",
+      "type": "file",
+      "value": "Cluster-Overlay64.exe",
+      "x_path": "%APPDATA%\\ApplicationData32\\Cluster-Overlay64.exe",
+      "x_legitimate_software": "Plane9"
+    },
+    {
+      "id": "e_plane9",
+      "type": "file",
+      "value": "Plane9Engine.dll",
+      "x_legitimate_software": "Plane9"
+    },
+    {
+      "id": "e_openvr",
+      "type": "file",
+      "value": "openvr_api.dll",
+      "x_sha256": "df6942dc1a89226359adf1aac597c3b270f4a408214b4f7c2083f9524605e0f7"
+    },
+    {
+      "id": "e_kernel",
+      "type": "file",
+      "value": "kernel-diag.lib",
+      "x_sha256": "dc6cddc391b373b18f105f49a80ff83d53b430d8dea35c1f1576832fa9fbd2b3",
+      "x_decoder": "DWORD-add, offset 0x24D1, size 6160, key 0x213AB052"
+    },
+    {
+      "id": "e_evr",
+      "type": "file",
+      "value": "evr.dll decoded stage",
+      "evidence": [
+        "Decoded from kernel-diag.lib",
+        "Entry point 0xED0"
+      ]
+    },
+    {
+      "id": "e_filter",
+      "type": "file",
+      "value": "filter.bin",
+      "x_sha256": "f5ca9c53d1537142889d7172c6643e886b2164233b91f0fc2d41ca010f035372",
+      "x_format": "Noise prefix plus PNG-like IDAT and IEND chunk sequence without PNG magic",
+      "x_decoder": "Concatenate IDAT data, DWORD XOR 0x227E9BDE, skip 16 bytes, decompress LZNT1"
+    },
+    {
+      "id": "e_bundle",
+      "type": "file",
+      "value": "filter.bin decoded LZNT1 payload bundle",
+      "x_size_bytes": 2017635,
+      "x_first_mz_offset": "0x4F0"
+    },
+    {
+      "id": "e_vslauncher",
+      "type": "file",
+      "value": "VSLauncher.exe",
+      "x_path": "%windir%\\SysWOW64\\VSLauncher.exe",
+      "x_publisher": "Microsoft",
+      "x_role_note": "Signed sideload host"
+    },
+    {
+      "id": "e_input",
+      "type": "file",
+      "value": "input.dll",
+      "x_path": "%windir%\\SysWOW64\\input.dll",
+      "x_sha256": "b811f28b844eff8c1f4f931639bed5bcc41113364fdfc44d7703259457839edb",
+      "x_product": "PassMark Endpoint",
+      "x_candidate_technique": "Signed third-party network stack reuse"
+    },
+    {
+      "id": "e_multicast",
+      "type": "ip",
+      "value": "224.0.0.255",
+      "x_port": 31339,
+      "x_protocol": "udp",
+      "x_marker": "MSG_EPFIND"
+    },
+    {
+      "id": "e_controller",
+      "type": "ip",
+      "value": "internal peer/controller",
+      "x_port": 31339,
+      "x_protocol": "tcp",
+      "x_placeholder": true
+    }
+  ],
+  "chain": [
+    {
+      "entity_id": "e_lure_lnk",
+      "role": "entry",
+      "techniques": [],
+      "role_confidence": "likely"
+    },
+    {
+      "entity_id": "e_hta_set",
+      "role": "entry",
+      "techniques": [
+        "IIM-T019",
+        "IIM-T020",
+        "IIM-T021"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "likely"
+    },
+    {
+      "entity_id": "e_delivery_ip",
+      "role": "staging",
+      "techniques": [
+        "IIM-T019",
+        "IIM-T020",
+        "IIM-T021"
+      ],
+      "role_confidence": "likely",
+      "technique_confidence": "likely"
+    },
+    {
+      "entity_id": "e_zip",
+      "role": "staging",
+      "techniques": [
+        "IIM-T024",
+        "IIM-T025"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "likely"
+    },
+    {
+      "entity_id": "e_cluster",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e_plane9",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e_openvr",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "review_notes": "Loader DLL. DLL sideloading itself maps to ATT&CK, not IIM."
+    },
+    {
+      "entity_id": "e_kernel",
+      "role": "staging",
+      "techniques": [
+        "IIM-T025"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "tentative",
+      "needs_review": true
+    },
+    {
+      "entity_id": "e_evr",
+      "role": "staging",
+      "techniques": [],
+      "role_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e_filter",
+      "role": "staging",
+      "techniques": [
+        "IIM-T025"
+      ],
+      "role_confidence": "confirmed",
+      "technique_confidence": "tentative",
+      "needs_review": true,
+      "review_notes": "Pseudo-PNG local staging is a strong structural signal, but the current catalog has no exact official technique for this file-format abuse."
+    },
+    {
+      "entity_id": "e_bundle",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "confirmed"
+    },
+    {
+      "entity_id": "e_vslauncher",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "likely"
+    },
+    {
+      "entity_id": "e_input",
+      "role": "payload",
+      "techniques": [],
+      "role_confidence": "confirmed",
+      "x_candidate_technique": "Signed third-party network stack reuse"
+    },
+    {
+      "entity_id": "e_multicast",
+      "role": "c2",
+      "techniques": [],
+      "role_confidence": "tentative",
+      "needs_review": true
+    },
+    {
+      "entity_id": "e_controller",
+      "role": "c2",
+      "techniques": [],
+      "role_confidence": "tentative",
+      "needs_review": true,
+      "review_notes": "No hardcoded external C2 found. Internal peer/controller remains a hypothesis."
+    }
+  ],
+  "relations": [
+    {
+      "from": "e_lure_lnk",
+      "to": "e_hta_set",
+      "type": "references",
+      "sequence_order": 1,
+      "confidence": "likely"
+    },
+    {
+      "from": "e_hta_set",
+      "to": "e_delivery_ip",
+      "type": "connect",
+      "sequence_order": 2,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_delivery_ip",
+      "to": "e_zip",
+      "type": "download",
+      "sequence_order": 3,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_zip",
+      "to": "e_cluster",
+      "type": "drops",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_zip",
+      "to": "e_plane9",
+      "type": "drops",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_zip",
+      "to": "e_openvr",
+      "type": "drops",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_zip",
+      "to": "e_kernel",
+      "type": "drops",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_zip",
+      "to": "e_filter",
+      "type": "drops",
+      "sequence_order": 4,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_cluster",
+      "to": "e_plane9",
+      "type": "execute",
+      "sequence_order": 5,
+      "confidence": "likely"
+    },
+    {
+      "from": "e_plane9",
+      "to": "e_openvr",
+      "type": "references",
+      "sequence_order": 6,
+      "confidence": "likely"
+    },
+    {
+      "from": "e_openvr",
+      "to": "e_kernel",
+      "type": "references",
+      "sequence_order": 7,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_kernel",
+      "to": "e_evr",
+      "type": "drops",
+      "sequence_order": 8,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_evr",
+      "to": "e_filter",
+      "type": "references",
+      "sequence_order": 9,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_filter",
+      "to": "e_bundle",
+      "type": "drops",
+      "sequence_order": 10,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_bundle",
+      "to": "e_vslauncher",
+      "type": "drops",
+      "sequence_order": 11,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_bundle",
+      "to": "e_input",
+      "type": "drops",
+      "sequence_order": 11,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_vslauncher",
+      "to": "e_input",
+      "type": "execute",
+      "sequence_order": 12,
+      "confidence": "likely"
+    },
+    {
+      "from": "e_input",
+      "to": "e_multicast",
+      "type": "communicates-with",
+      "sequence_order": 13,
+      "confidence": "confirmed"
+    },
+    {
+      "from": "e_multicast",
+      "to": "e_controller",
+      "type": "communicates-with",
+      "sequence_order": 14,
+      "confidence": "tentative"
+    },
+    {
+      "from": "e_input",
+      "to": "e_controller",
+      "type": "connect",
+      "sequence_order": 15,
+      "confidence": "tentative"
+    }
+  ],
+  "attack_annotations": [
+    {
+      "technique_id": "T1197",
+      "name": "BITS Jobs",
+      "comment": "bitsadmin-style transfer behavior in the initial chain."
+    },
+    {
+      "technique_id": "T1218.005",
+      "name": "Mshta",
+      "comment": "HTA execution path through mshta.exe."
+    },
+    {
+      "technique_id": "T1574.001",
+      "name": "DLL Search Order Hijacking",
+      "comment": "Plane9 and VSLauncher sideloading paths."
+    },
+    {
+      "technique_id": "T1027",
+      "name": "Obfuscated Files or Information",
+      "comment": "Encoded blobs, pseudo-PNG IDAT staging, XOR and LZNT1 layers."
+    },
+    {
+      "technique_id": "T1105",
+      "name": "Ingress Tool Transfer",
+      "comment": "Payload archive retrieval from delivery infrastructure."
+    }
+  ]
+}
